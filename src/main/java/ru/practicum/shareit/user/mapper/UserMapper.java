@@ -1,12 +1,12 @@
 package ru.practicum.shareit.user.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserDto;
 
-/** Maps between User model and UserDto. */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UserMapper {
-    private UserMapper() {
-    }
 
     public static UserDto toDto(User user) {
         if (user == null) {
@@ -22,4 +22,5 @@ public final class UserMapper {
         return new User(dto.getId(), dto.getName(), dto.getEmail());
     }
 }
+
 

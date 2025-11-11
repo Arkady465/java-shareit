@@ -2,22 +2,26 @@ package ru.practicum.shareit.item.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 import java.util.Objects;
 
 /** Basic Item model for in-memory storage. */
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Item {
-    private Long id;
+    Long id;
 
     @NotBlank
-    private String name;
+    String name;
 
-    private String description;
+    String description;
 
     @NotNull
-    private Boolean available;
+    Boolean available;
 
     /** owner user id */
-    private Long ownerId;
+    Long ownerId;
 
     public Item() {
     }
@@ -87,4 +91,3 @@ public class Item {
         return Objects.hash(id);
     }
 }
-

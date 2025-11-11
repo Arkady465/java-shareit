@@ -2,18 +2,22 @@ package ru.practicum.shareit.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 import java.util.Objects;
 
 /** Basic User model kept in-memory in sprint 14. */
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
-    private Long id;
+    Long id;
 
     @NotBlank
-    private String name;
+    String name;
 
     @NotBlank
     @Email
-    private String email;
+    String email;
 
     public User() {
     }
@@ -24,29 +28,17 @@ public class User {
         this.email = email;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setId(Long id) { this.id = id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public void setName(String name) { this.name = name; }
 
-    public String getEmail() {
-        return email;
-    }
+    public String getEmail() { return email; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public void setEmail(String email) { this.email = email; }
 
     @Override
     public boolean equals(Object o) {
@@ -61,9 +53,7 @@ public class User {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+    public int hashCode() { return Objects.hash(id); }
 
     @Override
     public String toString() {
@@ -74,4 +64,3 @@ public class User {
                 + '}';
     }
 }
-
