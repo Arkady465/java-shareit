@@ -3,8 +3,7 @@ package ru.practicum.shareit.item.service;
 import ru.practicum.shareit.item.dto.ItemDto;
 import java.util.List;
 
-public interface ItemService
-{
+public interface ItemService {
     ItemDto create(Long ownerId, ItemDto dto);
 
     ItemDto update(Long ownerId, Long itemId, ItemDto patch);
@@ -15,3 +14,4 @@ public interface ItemService
 
     List<ItemDto> search(String text);
 }
+

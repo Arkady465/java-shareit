@@ -11,26 +11,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-public class InMemoryItemStorage
-{
+public class InMemoryItemStorage {
     private final Map<Long, Item> items = new ConcurrentHashMap<>();
     private final AtomicLong seq = new AtomicLong(1);
 
-    public Item save(Item item)
-    {
+    public Item save(Item item) {
         long id = seq.getAndIncrement();
         item.setId(id);
         items.put(id, item);
         return item;
     }
 
-    public Optional<Item> findById(Long id)
-    {
+    public Optional<Item> findById(Long id) {
         return Optional.ofNullable(items.get(id));
     }
 
-    public List<Item> findByOwner(Long ownerId)
-    {
+    public List<Item> findByOwner(Long ownerId) {
         return items.values()
                 .stream()
                 .filter(i -> Objects.equals(i.getOwnerId(), ownerId))
@@ -38,36 +34,28 @@ public class InMemoryItemStorage
                 .collect(Collectors.toList());
     }
 
-    public Item updatePartial(Long id, Item patch, Long ownerId)
-    {
+    public Item updatePartial(Long id, Item patch, Long ownerId) {
         Item ex = items.get(id);
-        if (ex == null)
-        {
+        if (ex == null) {
             return null;
         }
-        if (!Objects.equals(ex.getOwnerId(), ownerId))
-        {
+        if (!Objects.equals(ex.getOwnerId(), ownerId)) {
             return null;
         }
-        if (patch.getName() != null)
-        {
+        if (patch.getName() != null) {
             ex.setName(patch.getName());
         }
-        if (patch.getDescription() != null)
-        {
+        if (patch.getDescription() != null) {
             ex.setDescription(patch.getDescription());
         }
-        if (patch.getAvailable() != null)
-        {
+        if (patch.getAvailable() != null) {
             ex.setAvailable(patch.getAvailable());
         }
         return ex;
     }
 
-    public List<Item> search(String text)
-    {
-        if (text == null || text.isBlank())
-        {
+    public List<Item> search(String text) {
+        if (text == null || text.isBlank()) {
             return new ArrayList<>();
         }
         String q = text.toLowerCase();
@@ -82,3 +70,4 @@ public class InMemoryItemStorage
                 .collect(Collectors.toList());
     }
 }
+

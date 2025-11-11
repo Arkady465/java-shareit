@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.Objects;
 
 /** Basic User model kept in-memory in sprint 14. */
-public class User
-{
+public class User {
     private Long id;
 
     @NotBlank
@@ -16,56 +15,45 @@ public class User
     @Email
     private String email;
 
-    public User()
-    {
+    public User() {
     }
 
-    public User(Long id, String name, String email)
-    {
+    public User(Long id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
     }
 
-    public Long getId()
-    {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Long id)
-    {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getEmail()
-    {
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email)
-    {
+    public void setEmail(String email) {
         this.email = email;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass())
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         User user = (User) o;
@@ -73,14 +61,12 @@ public class User
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(id);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "User{"
                 + "id=" + id
                 + ", name='" + name + '\''
@@ -88,3 +74,4 @@ public class User
                 + '}';
     }
 }
+
