@@ -1,21 +1,29 @@
 package ru.practicum.shareit.item.service;
 
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.common.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.InMemoryItemStorage;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 public class ItemServiceImpl implements ItemService {
     private final InMemoryItemStorage storage = new InMemoryItemStorage();
+    private final UserService userService;
+
+    public ItemServiceImpl(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public ItemDto create(Long ownerId, ItemDto dto) {
+        // 404 если владелец не существует
+        userService.get(ownerId);
         Item saved = storage.save(ItemMapper.fromDto(dto, ownerId));
         return ItemMapper.toDto(saved);
     }
@@ -24,7 +32,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto update(Long ownerId, Long itemId, ItemDto patch) {
         Item patched = storage.updatePartial(itemId, ItemMapper.fromDto(patch, ownerId), ownerId);
         if (patched == null) {
-            throw new NoSuchElementException("Item not found or not owned by user");
+            // скрываем факт существования вещи, если она чужая или отсутствует
+            throw new NotFoundException("Item not found: " + itemId);
         }
         return ItemMapper.toDto(patched);
     }
@@ -33,7 +42,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto get(Long requesterId, Long itemId) {
         return storage.findById(itemId)
                 .map(ItemMapper::toDto)
-                .orElseThrow(() -> new NoSuchElementException("Item not found: " + itemId));
+                .orElseThrow(() -> new NotFoundException("Item not found: " + itemId));
     }
 
     @Override
@@ -50,4 +59,5 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 }
+
 

@@ -2,13 +2,14 @@ package ru.practicum.shareit.user.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import ru.practicum.shareit.common.exceptions.ConflictException;
+import ru.practicum.shareit.common.exceptions.NotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.storage.InMemoryUserStorage;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Email is required");
         }
         if (storage.emailExists(dto.getEmail(), null)) {
-            throw new IllegalArgumentException("Email already in use");
+            throw new ConflictException("Email already in use");
         }
         User saved = storage.save(UserMapper.fromDto(dto));
         return UserMapper.toDto(saved);
@@ -30,11 +31,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto update(Long userId, UserDto patchDto) {
         if (patchDto.getEmail() != null && storage.emailExists(patchDto.getEmail(), userId)) {
-            throw new IllegalArgumentException("Email already in use");
+            throw new ConflictException("Email already in use");
         }
         User patched = storage.updatePartial(userId, UserMapper.fromDto(patchDto));
         if (patched == null) {
-            throw new NoSuchElementException("User not found: " + userId);
+            throw new NotFoundException("User not found: " + userId);
         }
         return UserMapper.toDto(patched);
     }
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
     public UserDto get(Long id) {
         return storage.findById(id)
                 .map(UserMapper::toDto)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + id));
+                .orElseThrow(() -> new NotFoundException("User not found: " + id));
     }
 
     @Override
@@ -58,4 +59,5 @@ public class UserServiceImpl implements UserService {
         storage.delete(id);
     }
 }
+
 
