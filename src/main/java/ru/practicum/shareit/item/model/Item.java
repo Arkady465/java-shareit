@@ -1,93 +1,59 @@
 package ru.practicum.shareit.item.model;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
+import jakarta.persistence.*;
+
+import lombok.*;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.Objects;
 
-/** Basic Item model for in-memory storage. */
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter
+@Setter
+@Entity
+@Table(name = "items")
 public class Item {
-    Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @NotBlank
-    String name;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    String description;
+    @Column(name = "description", nullable = false)
+    private String description;
 
-    @NotNull
-    Boolean available;
+    @Column(name = "available", nullable = false)
+    private Boolean available;
 
-    /** owner user id */
-    Long ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
+
+    @Column(name = "request_id")
+    private Long requestId;
+
+    public Item(String name, String description, Boolean available, User owner, Long requestId) {
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.owner = owner;
+        this.requestId = requestId;
+    }
 
     public Item() {
-    }
 
-    public Item(Long id, String name, String description, Boolean available, Long ownerId) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.available = available;
-        this.ownerId = ownerId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Boolean getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(Boolean available) {
-        this.available = available;
-    }
-
-    public Long getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (o == null || getClass() != o.getClass()) return false;
+
         Item item = (Item) o;
         return Objects.equals(id, item.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hashCode(id);
     }
 }
