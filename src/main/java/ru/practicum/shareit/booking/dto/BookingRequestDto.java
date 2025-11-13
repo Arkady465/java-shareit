@@ -4,7 +4,9 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-/** DTO для запроса на создание бронирования. */
+/**
+ * DTO для запроса на создание бронирования.
+ */
 public class BookingRequestDto {
 
     @NotNull

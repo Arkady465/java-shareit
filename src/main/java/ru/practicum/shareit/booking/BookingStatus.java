@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
-/** Статус бронирования в БД. */
+/**
+ * Статус бронирования в БД.
+ */
 public enum BookingStatus {
     WAITING,    // ожидает подтверждения владельцем
     APPROVED,   // подтверждено

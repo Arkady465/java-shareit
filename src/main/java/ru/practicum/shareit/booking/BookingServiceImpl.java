@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import io.micrometer.core.instrument.config.validate.ValidationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
@@ -74,8 +75,9 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (!booking.getItem().getOwnerId().equals(ownerId)) {
-            throw new ForbiddenException("You are not the owner of this item");
+            throw new ValidationException("User is not item owner");
         }
+
 
         if (booking.getStatus() != BookingStatus.WAITING) {
             throw new IllegalArgumentException("Booking already decided");
