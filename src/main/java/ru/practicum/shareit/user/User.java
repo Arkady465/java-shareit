@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -7,16 +8,23 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Objects;
 
-/** Basic User model kept in-memory in sprint 14. */
+/** User entity stored in DB. */
+@Entity
+@Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @NotBlank
+    @Column(nullable = false)
     String name;
 
-    @NotBlank
     @Email
+    @NotBlank
+    @Column(nullable = false, unique = true, length = 512)
     String email;
 
     public User() {
@@ -78,4 +86,5 @@ public class User {
                 + '}';
     }
 }
+
 

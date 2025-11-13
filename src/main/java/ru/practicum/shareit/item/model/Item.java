@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -7,20 +8,30 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Objects;
 
-/** Basic Item model for in-memory storage. */
+/** Item entity stored in DB. */
+@Entity
+@Table(name = "items")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Item {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @NotBlank
+    @Column(nullable = false)
     String name;
 
+    @NotBlank
+    @Column(nullable = false, length = 512)
     String description;
 
     @NotNull
+    @Column(nullable = false)
     Boolean available;
 
     /** owner user id */
+    @Column(name = "owner_id", nullable = false)
     Long ownerId;
 
     public Item() {

@@ -7,57 +7,77 @@ import ru.practicum.shareit.common.exceptions.NotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.storage.InMemoryUserStorage;
+import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private final InMemoryUserStorage storage = new InMemoryUserStorage();
+
+    private final UserRepository userRepository;
+
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDto create(UserDto dto) {
         if (!StringUtils.hasText(dto.getEmail())) {
             throw new IllegalArgumentException("Email is required");
         }
-        if (storage.emailExists(dto.getEmail(), null)) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
             throw new ConflictException("Email already in use");
         }
-        User saved = storage.save(UserMapper.fromDto(dto));
+
+        User user = UserMapper.fromDto(dto);
+        // на всякий случай выбиваем id, чтобы не мешал автоинкременту
+        user.setId(null);
+
+        User saved = userRepository.save(user);
         return UserMapper.toDto(saved);
     }
 
     @Override
     public UserDto update(Long userId, UserDto patchDto) {
-        if (patchDto.getEmail() != null && storage.emailExists(patchDto.getEmail(), userId)) {
+        if (patchDto.getEmail() != null
+                && userRepository.existsByEmailAndIdNot(patchDto.getEmail(), userId)) {
             throw new ConflictException("Email already in use");
         }
-        User patched = storage.updatePartial(userId, UserMapper.fromDto(patchDto));
-        if (patched == null) {
-            throw new NotFoundException("User not found: " + userId);
+
+        User existing = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found: " + userId));
+
+        if (patchDto.getName() != null) {
+            existing.setName(patchDto.getName());
         }
-        return UserMapper.toDto(patched);
+        if (patchDto.getEmail() != null) {
+            existing.setEmail(patchDto.getEmail());
+        }
+
+        User updated = userRepository.save(existing);
+        return UserMapper.toDto(updated);
     }
 
     @Override
     public UserDto get(Long id) {
-        return storage.findById(id)
-                .map(UserMapper::toDto)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found: " + id));
+        return UserMapper.toDto(user);
     }
 
     @Override
     public List<UserDto> getAll() {
-        return storage.findAll().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void delete(Long id) {
-        storage.delete(id);
+        userRepository.deleteById(id);
     }
 }
+
 
 
