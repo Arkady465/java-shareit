@@ -73,6 +73,10 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException("Booking not found: " + bookingId);
         }
 
+        if (!booking.getItem().getOwnerId().equals(ownerId)) {
+            throw new ForbiddenException("You are not the owner of this item");
+        }
+
         if (booking.getStatus() != BookingStatus.WAITING) {
             throw new IllegalArgumentException("Booking already decided");
         }

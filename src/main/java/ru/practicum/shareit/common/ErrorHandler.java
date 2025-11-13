@@ -14,6 +14,12 @@ import java.util.Map;
 @RestControllerAdvice
 public class ErrorHandler {
 
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleForbidden(final ForbiddenException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handle404(NotFoundException ex) {
