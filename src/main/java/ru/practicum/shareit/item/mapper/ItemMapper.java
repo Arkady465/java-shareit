@@ -1,26 +1,42 @@
 package ru.practicum.shareit.item.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ItemMapper {
-
-    public static ItemDto toDto(Item model) {
-        if (model == null) {
-            return null;
+public class ItemMapper {
+    public static Item mapToItem(ItemDto itemDto, User owner) {
+        if (itemDto == null) {
+            throw new NotFoundException("ItemDto cannot be null");
         }
-        return new ItemDto(model.getId(), model.getName(), model.getDescription(), model.getAvailable());
+
+        if (owner == null) {
+            throw new NotFoundException("Owner cannot be null");
+        }
+
+        Item item = new Item();
+        item.setId(itemDto.getId());
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        item.setAvailable(itemDto.getAvailable());
+        item.setOwner(owner);
+
+        return item;
     }
 
-    public static Item fromDto(ItemDto dto, Long ownerId) {
-        if (dto == null) {
-            return null;
+    public static ItemDto mapToItemDto(Item item) {
+        if (item == null) {
+            throw new NotFoundException("Item cannot be null");
         }
-        return new Item(dto.getId(), dto.getName(), dto.getDescription(), dto.getAvailable(), ownerId);
+
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.isAvailable());
+        itemDto.setOwnerId(item.getOwner().getId());
+
+        return itemDto;
     }
 }
-
-

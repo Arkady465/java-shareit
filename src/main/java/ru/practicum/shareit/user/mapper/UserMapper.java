@@ -1,26 +1,35 @@
 package ru.practicum.shareit.user.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserDto;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UserMapper {
-
-    public static UserDto toDto(User user) {
-        if (user == null) {
-            return null;
+@Component
+public class UserMapper {
+    public static User mapToUser(UserDto userDto) {
+        if (userDto == null) {
+            throw new NotFoundException("userDto cannot be null");
         }
-        return new UserDto(user.getId(), user.getName(), user.getEmail());
+
+        User user = new User();
+        user.setId(userDto.getId());
+        user.setEmail(userDto.getEmail());
+        user.setName(userDto.getName());
+
+        return user;
     }
 
-    public static User fromDto(UserDto dto) {
-        if (dto == null) {
-            return null;
+    public static UserDto mapToUserDto(User user) {
+        if (user == null) {
+            throw new NotFoundException("User cannot be null");
         }
-        return new User(dto.getId(), dto.getName(), dto.getEmail());
+
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setEmail(user.getEmail());
+        userDto.setName(user.getName());
+
+        return userDto;
     }
 }
-
-
