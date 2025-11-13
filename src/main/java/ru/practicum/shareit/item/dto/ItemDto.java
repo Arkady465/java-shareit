@@ -19,8 +19,12 @@ public class ItemDto {
     public ItemDto() {
     }
 
-    public ItemDto(Long id, String name, String description, Boolean available,
-                   BookingShortDto lastBooking, BookingShortDto nextBooking,
+    public ItemDto(Long id,
+                   String name,
+                   String description,
+                   Boolean available,
+                   BookingShortDto lastBooking,
+                   BookingShortDto nextBooking,
                    List<CommentDto> comments) {
         this.id = id;
         this.name = name;
@@ -31,52 +35,60 @@ public class ItemDto {
         this.comments = comments;
     }
 
-    public Long getId() { return id; }
-
-    public String getName() { return name; }
-
-    public String getDescription() { return description; }
-
-    public Boolean getAvailable() { return available; }
-
-    public BookingShortDto getLastBooking() {
-        return lastBooking;
-    }
-
-    public BookingShortDto getNextBooking() {
-        return nextBooking;
-    }
-
-    public List<CommentDto> getComments() {
-        return comments;
-    }
-
-    public void setLastBooking(BookingShortDto lastBooking) {
-        this.lastBooking = lastBooking;
-    }
-
-    public void setNextBooking(BookingShortDto nextBooking) {
-        this.nextBooking = nextBooking;
-    }
-
-    public void setComments(List<CommentDto> comments) {
-        this.comments = comments;
+    public Long getId() {
+        return id;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setAvailable(Boolean available) {
-        this.available = available;
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Boolean getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(Boolean available) {
+        this.available = available;
+    }
+
+    public BookingShortDto getLastBooking() {
+        return lastBooking;
+    }
+
+    public void setLastBooking(BookingShortDto lastBooking) {
+        this.lastBooking = lastBooking;
+    }
+
+    public BookingShortDto getNextBooking() {
+        return nextBooking;
+    }
+
+    public void setNextBooking(BookingShortDto nextBooking) {
+        this.nextBooking = nextBooking;
+    }
+
+    public List<CommentDto> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentDto> comments) {
+        this.comments = comments;
     }
 }
 
