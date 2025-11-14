@@ -1,26 +1,34 @@
 package ru.practicum.shareit.item.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ItemMapper {
+public class ItemMapper {
 
-    public static ItemDto toDto(Item model) {
-        if (model == null) {
-            return null;
-        }
-        return new ItemDto(model.getId(), model.getName(), model.getDescription(), model.getAvailable());
+    public static ItemDto toDto(Item item) {
+        if (item == null) return null;
+
+        return ItemDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .requestId(item.getRequestId())
+                .comments(null)         // будут установлены в сервисе
+                .lastBooking(null)
+                .nextBooking(null)
+                .build();
     }
 
-    public static Item fromDto(ItemDto dto, Long ownerId) {
-        if (dto == null) {
-            return null;
-        }
-        return new Item(dto.getId(), dto.getName(), dto.getDescription(), dto.getAvailable(), ownerId);
+    public static Item toItem(ItemDto dto) {
+        if (dto == null) return null;
+
+        return Item.builder()
+                .id(dto.getId())
+                .name(dto.getName())
+                .description(dto.getDescription())
+                .available(dto.getAvailable())
+                .requestId(dto.getRequestId())
+                .build();
     }
 }
-
-
