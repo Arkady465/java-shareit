@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking;
 
-import io.micrometer.core.instrument.config.validate.ValidationException;
+import ru.practicum.shareit.common.exceptions.ValidationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
