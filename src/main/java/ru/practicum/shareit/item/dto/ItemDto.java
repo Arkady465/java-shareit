@@ -11,10 +11,6 @@ import ru.practicum.shareit.item.comment.CommentDto;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
-
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -34,6 +30,14 @@ public class ItemDto {
     private BookingShortDto lastBooking;
     private BookingShortDto nextBooking;
 
+    // 👇 ДОБАВЛЕННЫЙ КОНСТРУКТОР
+    public ItemDto(Long id, String name, String description, Boolean available) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.available = available;
+    }
+
     public ItemDto(Long id, String name, String description, Boolean available, Long request, List<CommentDto> comments) {
         this.id = id;
         this.name = name;
@@ -43,3 +47,4 @@ public class ItemDto {
         this.comments = comments;
     }
 }
+
