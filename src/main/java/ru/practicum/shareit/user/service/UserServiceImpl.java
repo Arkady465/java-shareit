@@ -1,63 +1,71 @@
 package ru.practicum.shareit.user.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import ru.practicum.shareit.common.exceptions.ConflictException;
-import ru.practicum.shareit.common.exceptions.NotFoundException;
+import ru.practicum.shareit.exception.InternalServerException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.dao.UserRepositoryJpa;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.storage.InMemoryUserStorage;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final InMemoryUserStorage storage = new InMemoryUserStorage();
+
+    private final UserRepositoryJpa userRepository;
 
     @Override
-    public UserDto create(UserDto dto) {
-        if (!StringUtils.hasText(dto.getEmail())) {
-            throw new IllegalArgumentException("Email is required");
+    public UserDto add(UserDto userDto) {
+        User user = UserMapper.mapToUser(userDto);
+
+        if (userRepository.findAll().stream().anyMatch(u -> u.getEmail().equals(userDto.getEmail()))) {
+            throw new InternalServerException("Пользователь с email " + userDto.getEmail() + " уже существует");
         }
-        if (storage.emailExists(dto.getEmail(), null)) {
-            throw new ConflictException("Email already in use");
-        }
-        User saved = storage.save(UserMapper.fromDto(dto));
-        return UserMapper.toDto(saved);
+
+        user = userRepository.save(user);
+
+        return UserMapper.mapToUserDto(user);
     }
 
     @Override
-    public UserDto update(Long userId, UserDto patchDto) {
-        if (patchDto.getEmail() != null && storage.emailExists(patchDto.getEmail(), userId)) {
-            throw new ConflictException("Email already in use");
+    public UserDto update(Long userId, UserDto userDto) {
+        boolean isSameEmail = false;
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден"));
+
+        if (userDto.getName() != null) {
+            existingUser.setName(userDto.getName());
         }
-        User patched = storage.updatePartial(userId, UserMapper.fromDto(patchDto));
-        if (patched == null) {
-            throw new NotFoundException("User not found: " + userId);
+
+        if (userDto.getEmail() != null) {
+            isSameEmail = existingUser.getEmail().equals(userDto.getEmail());
+
+            if (!isSameEmail) {
+                if (userRepository.findAll().stream().anyMatch(u -> u.getEmail().equals(userDto.getEmail())
+                        && !u.getId().equals(userDto.getId()))) {
+                    throw new InternalServerException("Пользователь с email " + userDto.getEmail() + " уже существует");
+                }
+            }
+
+            existingUser.setEmail(userDto.getEmail());
         }
-        return UserMapper.toDto(patched);
+
+        existingUser = userRepository.save(existingUser);
+
+        return UserMapper.mapToUserDto(existingUser);
     }
 
     @Override
-    public UserDto get(Long id) {
-        return storage.findById(id)
-                .map(UserMapper::toDto)
-                .orElseThrow(() -> new NotFoundException("User not found: " + id));
-    }
+    public UserDto getById(Long id) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + id + " не найден"));
 
-    @Override
-    public List<UserDto> getAll() {
-        return storage.findAll().stream()
-                .map(UserMapper::toDto)
-                .collect(Collectors.toList());
+        return UserMapper.mapToUserDto(existingUser);
     }
 
     @Override
     public void delete(Long id) {
-        storage.delete(id);
+        userRepository.deleteById(id);
     }
 }
-
-
