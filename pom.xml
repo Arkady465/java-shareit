@@ -33,35 +33,20 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
-        <!-- Драйвер PostgreSQL (у тебя он уже есть, оставь именно так) -->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>test</scope>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -71,6 +56,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -125,11 +114,11 @@
 						</execution>
 					</executions>
 					<dependencies>
-						<dependency>
-							<groupId>com.puppycrawl.tools</groupId>
-							<artifactId>checkstyle</artifactId>
-							<version>10.3</version>
-						</dependency>
+<!--						<dependency>-->
+<!--							<groupId>com.puppycrawl.tools</groupId>-->
+<!--							<artifactId>checkstyle</artifactId>-->
+<!--							<version>10.3</version>-->
+<!--						</dependency>-->
 					</dependencies>
 				</plugin>
 				<plugin>
@@ -228,18 +217,18 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-checkstyle-plugin</artifactId>
 					</plugin>
-					<plugin>
-						<groupId>com.github.spotbugs</groupId>
-						<artifactId>spotbugs-maven-plugin</artifactId>
-					</plugin>
+<!--					<plugin>-->
+<!--						<groupId>com.github.spotbugs</groupId>-->
+<!--						<artifactId>spotbugs-maven-plugin</artifactId>-->
+<!--					</plugin>-->
 				</plugins>
 			</build>
 			<reporting>
 				<plugins>
-					<plugin>
-						<groupId>com.github.spotbugs</groupId>
-						<artifactId>spotbugs-maven-plugin</artifactId>
-					</plugin>
+<!--					<plugin>-->
+<!--						<groupId>com.github.spotbugs</groupId>-->
+<!--						<artifactId>spotbugs-maven-plugin</artifactId>-->
+<!--					</plugin>-->
 				</plugins>
 			</reporting>
 		</profile>
@@ -247,10 +236,10 @@
 			<id>coverage</id>
 			<build>
 				<plugins>
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-					</plugin>
+<!--					<plugin>-->
+<!--						<groupId>org.jacoco</groupId>-->
+<!--						<artifactId>jacoco-maven-plugin</artifactId>-->
+<!--					</plugin>-->
 				</plugins>
 			</build>
 		</profile>

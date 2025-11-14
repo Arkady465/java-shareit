@@ -1,31 +1,27 @@
 package ru.practicum.shareit.user;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * TODO Sprint add-controllers.
+ */
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    @NotBlank
-    @Column(nullable = false)
-    String name;
+    @Column
+    private String name;
 
-    @NotBlank
-    @Email
-    @Column(nullable = false, unique = true, length = 512)
-    String email;
+    @Column(unique = true)
+    private String email;
 }

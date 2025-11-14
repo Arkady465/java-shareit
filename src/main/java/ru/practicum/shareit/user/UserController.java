@@ -1,42 +1,54 @@
 package ru.practicum.shareit.user;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
 
+/**
+ * TODO Sprint add-controllers.
+ */
 @RestController
-@RequestMapping("/users")
+@RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserController {
-
     private final UserService userService;
 
-    @PostMapping
-    public UserDto create(@RequestBody UserDto dto) {
-        return userService.create(dto);
-    }
-
-    @PatchMapping("/{id}")
-    public UserDto update(@PathVariable Long id,
-                          @RequestBody UserDto dto) {
-        return userService.update(id, dto);
-    }
-
     @GetMapping("/{id}")
-    public UserDto get(@PathVariable Long id) {
-        return userService.get(id);
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
 
     @GetMapping
-    public List<UserDto> getAll() {
-        return userService.getAll();
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserDto> getUsers() {
+        return userService.getUsers();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto addUser(@Valid @RequestBody UserDto userDto) {
+        return userService.addUser(userDto);
+    }
+
+    @PatchMapping("/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto updateUser(
+            @PathVariable Long userId,
+            @Valid @RequestBody UserUpdateDto newUserDto
+    ) {
+        return userService.updateUser(userId, newUserDto);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        userService.delete(id);
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
     }
 }
-
-
