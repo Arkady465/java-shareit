@@ -1,5 +1,6 @@
 package ru.practicum.shareit.common;
 
+import ru.practicum.shareit.common.exceptions.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
