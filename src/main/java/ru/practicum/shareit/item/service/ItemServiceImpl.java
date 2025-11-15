@@ -85,12 +85,12 @@ public class ItemServiceImpl implements ItemService {
 
         if (itemDto.getOwnerId().equals(userId)) {
             Optional<Booking> lastBooking = bookingRepository
-                    .findFirstByItemIdAndEndBeforeOrderByEndDesc(itemId, LocalDateTime.now());
+                    .findFirstByItem_IdAndEndBeforeOrderByEndDesc(itemId, LocalDateTime.now());
 
             lastBooking.ifPresent(booking -> itemDto.setLastBooking(BookingMapper.mapToBookingDto(booking)));
 
             Optional<Booking> nextBooking = bookingRepository
-                    .findFirstByItemIdAndStartAfterOrderByStart(itemId, LocalDateTime.now());
+                    .findFirstByItem_IdAndStartAfterOrderByStart(itemId, LocalDateTime.now());
             nextBooking.ifPresent(booking -> itemDto.setNextBooking(BookingMapper.mapToBookingDto(booking)));
         }
 
@@ -112,13 +112,13 @@ public class ItemServiceImpl implements ItemService {
                     itemDto.setComments(commentDto);
 
                     Optional<Booking> lastBooking = bookingRepository
-                            .findFirstByItemIdAndEndBeforeOrderByEndDesc(item.getId(), LocalDateTime.now());
+                            .findFirstByItem_IdAndEndBeforeOrderByEndDesc(item.getId(), LocalDateTime.now());
                     lastBooking.ifPresent(
                             booking -> itemDto.setLastBooking(BookingMapper.mapToBookingDto(booking))
                     );
 
                     Optional<Booking> nextBooking = bookingRepository
-                            .findFirstByItemIdAndStartAfterOrderByStart(item.getId(), LocalDateTime.now());
+                            .findFirstByItem_IdAndStartAfterOrderByStart(item.getId(), LocalDateTime.now());
                     nextBooking.ifPresent(
                             booking -> itemDto.setNextBooking(BookingMapper.mapToBookingDto(booking))
                     );
@@ -140,28 +140,30 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
-        validateItem(itemId);
-        validateUser(userId);
+    public CommentDto addComment(Long itemId, CommentDto commentDto, Long authorId) {
+        User user = userRepository.findById(authorId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Item not found"));
 
+        LocalDateTime now = LocalDateTime.now();
         boolean hasCompletedBooking = bookingRepository
-                .existsByItem_IdAndBooker_IdAndEndBefore(itemId, userId, LocalDateTime.now());
+                .existsByItem_IdAndBooker_IdAndEndBefore(itemId, authorId, now);
 
         if (!hasCompletedBooking) {
-            throw new ValidationException("Пользователь не может оставить комментарий, " +
-                    "так как он не завершал аренду этой вещи");
+            throw new ValidationException("User has not completed booking for this item");
         }
 
         Comment comment = new Comment();
         comment.setText(commentDto.getText());
-        comment.setItem(itemRepository.getReferenceById(itemId));
-        comment.setAuthor(userRepository.getReferenceById(userId));
-        comment.setCreated(LocalDateTime.now());
+        comment.setItem(item);
+        comment.setAuthor(user);
+        comment.setCreated(now);
 
-        commentRepository.save(comment);
-
-        return CommentMapper.mapToCommentDto(comment);
+        Comment saved = commentRepository.save(comment);
+        return CommentMapper.toCommentDto(saved);
     }
+
 
 
     private void validateItem(Long itemId) {

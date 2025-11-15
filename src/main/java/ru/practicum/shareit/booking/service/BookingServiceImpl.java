@@ -106,12 +106,26 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime currentDate = LocalDateTime.now();
 
         bookings = switch (state) {
-            case "CURRENT" -> bookingRepository.findByItem_Owner_IdAndEndBefore(ownerId, currentDate, currentDate);
-            case "PAST" -> bookingRepository.findByItem_Owner_IdAndEndBefore(ownerId, currentDate);
-            case "FUTURE" -> bookingRepository.findByItem_Owner_IdAndStartAfter(ownerId, currentDate);
-            case "WAITING" -> bookingRepository.findByItem_Owner_IdAndStatus(ownerId, BookingStatus.WAITING);
-            case "REJECTED" -> bookingRepository.findByItem_Owner_IdAndStatus(ownerId, BookingStatus.REJECTED);
-            default -> bookingRepository.findAllByItem_Owner_Id(ownerId);
+            case "ALL":
+                bookings = bookingRepository.findAllByItem_Owner_Id(ownerId);
+                break;
+            case "PAST":
+                bookings = bookingRepository.findByItem_Owner_IdAndEndBefore(ownerId, currentDate);
+                break;
+            case "CURRENT":
+                bookings = bookingRepository
+                        .findByItem_Owner_IdAndStartBeforeAndEndAfter(ownerId, currentDate, currentDate);
+                break;
+            case "FUTURE":
+                bookings = bookingRepository.findByItem_Owner_IdAndStartAfter(ownerId, currentDate);
+                break;
+            case "WAITING":
+                bookings = bookingRepository.findByItem_Owner_IdAndStatus(ownerId, BookingStatus.WAITING);
+                break;
+            case "REJECTED":
+                bookings = bookingRepository.findByItem_Owner_IdAndStatus(ownerId, BookingStatus.REJECTED);
+                break;
+
         };
 
         return bookings.stream()
@@ -125,17 +139,37 @@ public class BookingServiceImpl implements BookingService {
         User booker = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден"));
 
-        List<Booking> bookings;
         LocalDateTime currentDate = LocalDateTime.now();
+        List<Booking> bookings;
 
-        bookings = switch (state) {
-            case "CURRENT" -> bookingRepository.findByBookerIdAndStartBeforeAndEndAfter(userId, currentDate, currentDate);
-            case "PAST" -> bookingRepository.findByBookerIdAndEndBefore(userId, currentDate);
-            case "FUTURE" -> bookingRepository.findByBookerIdAndStartAfter(userId, currentDate);
-            case "WAITING" -> bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.WAITING);
-            case "REJECTED" -> bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.REJECTED);
-            default -> bookingRepository.findAllByBooker(booker);
-        };
+        switch (stateStr) {
+            case "ALL":
+                bookings = bookingRepository.findAllByBooker(user);
+                break;
+            case "CURRENT":
+                bookings = bookingRepository
+                        .findByBookerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(user, currentDate, currentDate);
+                break;
+            case "PAST":
+                bookings = bookingRepository
+                        .findByBookerAndEndIsBeforeOrderByStartDesc(user, currentDate);
+                break;
+            case "FUTURE":
+                bookings = bookingRepository
+                        .findByBookerAndStartIsAfterOrderByStartDesc(user, currentDate);
+                break;
+            case "WAITING":
+                bookings = bookingRepository
+                        .findByBooker_IdAndStatus(userId, BookingStatus.WAITING);
+                break;
+            case "REJECTED":
+                bookings = bookingRepository
+                        .findByBooker_IdAndStatus(userId, BookingStatus.REJECTED);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown state: " + stateStr);
+        }
+
 
         return bookings.stream()
                 .sorted((b1, b2) -> b2.getStart().compareTo(b1.getStart()))
