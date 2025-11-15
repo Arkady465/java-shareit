@@ -37,6 +37,33 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
+    public ItemDto addItem(Long userId, ItemDto itemDto) {
+        return create(itemDto, userId);
+    }
+
+    @Override
+    @Transactional
+    public ItemDto updateItem(Long itemId, Long userId, ItemDto itemDto) {
+        return update(itemDto, itemId, userId);
+    }
+
+    @Override
+    public ItemDto getItemById(Long itemId, Long userId) {
+        return getById(itemId, userId);
+    }
+
+    @Override
+    public List<ItemDto> getItemsByOwner(Long userId) {
+        return getAllByUser(userId, 0, 20);
+    }
+
+    @Override
+    public List<ItemDto> searchItems(String text) {
+        return search(text, 0, 20);
+    }
+
+    @Override
+    @Transactional
     public ItemDto create(ItemDto itemDto, Long userId) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));

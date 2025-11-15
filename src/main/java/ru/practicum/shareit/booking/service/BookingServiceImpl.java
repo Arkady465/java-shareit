@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingSimpleDto;
 import ru.practicum.shareit.booking.storage.BookingRepository;
@@ -33,10 +34,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto create(BookingDto bookingDto, Long userId) {
+    public BookingDto add(Long userId, BookingCreateDto bookingCreateDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        Item item = itemRepository.findById(bookingDto.getItemId())
+        Item item = itemRepository.findById(bookingCreateDto.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item not found"));
 
         if (!item.getAvailable()) {
@@ -48,8 +49,8 @@ public class BookingServiceImpl implements BookingService {
         }
 
         Booking booking = Booking.builder()
-                .start(bookingDto.getStart())
-                .end(bookingDto.getEnd())
+                .start(bookingCreateDto.getStart())
+                .end(bookingCreateDto.getEnd())
                 .item(item)
                 .booker(user)
                 .status(BookingStatus.WAITING)
@@ -61,7 +62,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto updateStatus(Long bookingId, Long userId, Boolean approved) {
+    public BookingDto update(Long bookingId, Long userId, Boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking not found"));
 
@@ -88,6 +89,16 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return toBookingDto(booking);
+    }
+
+    @Override
+    public List<BookingDto> getByOwner(Long userId, String state) {
+        return getAllByOwner(userId, state, 0, 20);
+    }
+
+    @Override
+    public List<BookingDto> getByUser(Long userId, String state) {
+        return getAllByBooker(userId, state, 0, 20);
     }
 
     @Override
