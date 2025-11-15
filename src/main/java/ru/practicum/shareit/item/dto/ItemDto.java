@@ -28,5 +28,8 @@ public class ItemDto {
     private BookingShortDto lastBooking;
     private BookingShortDto nextBooking;
     private List<CommentDto> comments;
+
+    public ItemDto(Long id, @NotBlank String name, @NotBlank String description, @NotNull Boolean available) {
+    }
 }
 

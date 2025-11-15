@@ -13,7 +13,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.common.exceptions.BadRequestException;
 import ru.practicum.shareit.common.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -23,6 +23,8 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.user.dto.UserDto.builder;
 
 @Slf4j
 @Service
@@ -225,7 +227,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private ru.practicum.shareit.user.dto.UserDto convertToUserDto(User user) {
-        return ru.practicum.shareit.user.dto.UserDto.builder()
+        return builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())

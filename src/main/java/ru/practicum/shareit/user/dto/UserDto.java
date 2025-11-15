@@ -1,7 +1,9 @@
 package ru.practicum.shareit.user.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jdk.jshell.Snippet;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 /** DTO returned/accepted via REST for users. */
 public class UserDto {
@@ -21,6 +23,14 @@ public class UserDto {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    public static Snippet builder() {
+        return null;
+    }
+
+    public static Snippet builder() {
+        return null;
     }
 
     public Long getId() {
