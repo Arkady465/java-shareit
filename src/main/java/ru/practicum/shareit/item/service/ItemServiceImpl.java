@@ -160,20 +160,16 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> lastBookings = bookingRepository
                 .findLastBookingForItem(itemDto.getId(), now, BookingStatus.APPROVED);
         if (!lastBookings.isEmpty()) {
-            itemDto.setLastBooking(toBookingInfo(lastBookings.get(0)));
+            itemDto.setLastBooking(new ItemDto.BookingInfo(lastBookings.get(0).getId(), lastBookings.get(0).getBooker().getId()));
         }
 
         List<Booking> nextBookings = bookingRepository
                 .findNextBookingForItem(itemDto.getId(), now, BookingStatus.APPROVED);
         if (!nextBookings.isEmpty()) {
-            itemDto.setNextBooking(toBookingInfo(nextBookings.get(0)));
+            itemDto.setNextBooking(new ItemDto.BookingInfo(nextBookings.get(0).getId(), nextBookings.get(0).getBooker().getId()));
         }
 
         return itemDto;
-    }
-
-    private ItemDto.BookingInfo toBookingInfo(Booking booking) {
-        return new ItemDto.BookingInfo(booking.getId(), booking.getBooker().getId());
     }
 
     private List<CommentDto> getCommentsByItemId(Long itemId) {
@@ -189,10 +185,5 @@ public class ItemServiceImpl implements ItemService {
                 .authorName(comment.getAuthor().getName())
                 .created(comment.getCreated())
                 .build();
-    }
-
-    private Item getItemById(Long itemId) {
-        return itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Item not found"));
     }
 }

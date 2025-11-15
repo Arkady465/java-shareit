@@ -174,14 +174,5 @@ public class BookingServiceImpl implements BookingService {
                 .item(new BookingSimpleDto(booking.getItem().getId(), booking.getBooker().getId()))
                 .build();
     }
-
-    private Item getItemById(Long itemId) {
-        return itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Item not found"));
-    }
-
-    private BookingSimpleDto toBookingSimpleDto(Booking booking) {
-        return new BookingSimpleDto(booking.getId(), booking.getBooker().getId());
-    }
 }
 
