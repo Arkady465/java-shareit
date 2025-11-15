@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.Item;
 import java.util.List;
 
 public interface ItemRepositoryJpa extends JpaRepository<Item, Long> {
