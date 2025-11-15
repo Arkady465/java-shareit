@@ -1,5 +1,7 @@
 package ru.practicum.shareit.booking.mapper;
 
+import lombok.experimental.UtilityClass;
+
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
@@ -10,18 +12,17 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserDto;
 
+@UtilityClass
 public class BookingMapper {
     public static Booking mapToBooking(BookingCreateDto bookingCreateDto, Item item, User booker) {
         if (bookingCreateDto == null) {
             throw new NotFoundException("BookingCreateDto cannot be null");
         }
-
         if (item == null) {
             throw new NotFoundException("Item cannot be null");
         }
-
         if (booker == null) {
-            throw new NotFoundException("Booker cannot be null");
+            throw new NotFoundException("User cannot be null");
         }
 
         Booking booking = new Booking();
@@ -63,3 +64,4 @@ public class BookingMapper {
         return bookingDto;
     }
 }
+

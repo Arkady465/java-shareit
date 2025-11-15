@@ -11,31 +11,33 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.common.HeaderConstants;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
+
 import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
  */
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/items")
+@RequiredArgsConstructor
 public class ItemController {
 
     private final ItemService itemService;
 
     @PostMapping
     public ItemDto addItem(
-            @RequestHeader("X-Sharer-User-Id") Long ownerId,
+            @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long ownerId,
             @Valid @RequestBody ItemDto itemDto) {
         return itemService.addItem(ownerId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(
-            @RequestHeader("X-Sharer-User-Id") Long ownerId,
+            @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long ownerId,
             @PathVariable Long itemId,
             @RequestBody ItemDto itemDto) {
         return itemService.updateItem(ownerId, itemId, itemDto);
@@ -43,14 +45,15 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemDto getItemById(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long userId,
             @PathVariable Long itemId) {
         return itemService.getItemById(userId, itemId);
     }
 
     @GetMapping
-    public List<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
-        return itemService.getItemsByOwner(ownerId);
+    public List<ItemDto> getOwnerItems(
+            @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long ownerId) {
+        return itemService.getOwnerItems(ownerId);
     }
 
     @GetMapping("/search")
@@ -62,7 +65,7 @@ public class ItemController {
     public CommentDto addComment(
             @PathVariable Long itemId,
             @Valid @RequestBody CommentDto commentDto,
-            @RequestHeader("X-Sharer-User-Id") Long authorId) {
+            @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long authorId) {
         return itemService.addComment(itemId, commentDto, authorId);
     }
 }
