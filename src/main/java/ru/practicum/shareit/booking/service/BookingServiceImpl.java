@@ -106,12 +106,12 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime currentDate = LocalDateTime.now();
 
         bookings = switch (state) {
-            case "CURRENT" -> bookingRepository.findByItemOwnerIdAndStartBeforeAndEndAfter(ownerId, currentDate, currentDate);
-            case "PAST" -> bookingRepository.findByItemOwnerIdAndEndBefore(ownerId, currentDate);
-            case "FUTURE" -> bookingRepository.findByItemOwnerIdAndStartAfter(ownerId, currentDate);
-            case "WAITING" -> bookingRepository.findByItemOwnerIdAndStatus(ownerId, BookingStatus.WAITING);
-            case "REJECTED" -> bookingRepository.findByItemOwnerIdAndStatus(ownerId, BookingStatus.REJECTED);
-            default -> bookingRepository.findAllByItemOwnerId(ownerId);
+            case "CURRENT" -> bookingRepository.findByItem_Owner_IdAndEndBefore(ownerId, currentDate, currentDate);
+            case "PAST" -> bookingRepository.findByItem_Owner_IdAndEndBefore(ownerId, currentDate);
+            case "FUTURE" -> bookingRepository.findByItem_Owner_IdAndStartAfter(ownerId, currentDate);
+            case "WAITING" -> bookingRepository.findByItem_Owner_IdAndStatus(ownerId, BookingStatus.WAITING);
+            case "REJECTED" -> bookingRepository.findByItem_Owner_IdAndStatus(ownerId, BookingStatus.REJECTED);
+            default -> bookingRepository.findAllByItem_Owner_Id(ownerId);
         };
 
         return bookings.stream()

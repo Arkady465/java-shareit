@@ -140,26 +140,29 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentDto addComment(Long itemId, CommentDto commentDto, Long authorId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Вещь с id = " + itemId + " не найдена"));
+    public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
+        validateItem(itemId);
+        validateUser(userId);
 
-        User user = userRepository.findById(authorId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + authorId + " не найден"));
+        boolean hasCompletedBooking = bookingRepository
+                .existsByItem_IdAndBooker_IdAndEndBefore(itemId, userId, LocalDateTime.now());
 
-        boolean hasBooked = bookingRepository.existsByItemIdAndBookerIdAndEndBefore(
-                itemId, authorId, LocalDateTime.now());
-
-        if (!hasBooked) {
-            throw new ValidationException("Пользователь с id = " + authorId + " не брал вещь с id = " + itemId + "в аренду");
+        if (!hasCompletedBooking) {
+            throw new ValidationException("Пользователь не может оставить комментарий, " +
+                    "так как он не завершал аренду этой вещи");
         }
 
-        Comment comment = CommentMapper.mapToComment(commentDto, item, user);
+        Comment comment = new Comment();
+        comment.setText(commentDto.getText());
+        comment.setItem(itemRepository.getReferenceById(itemId));
+        comment.setAuthor(userRepository.getReferenceById(userId));
         comment.setCreated(LocalDateTime.now());
-        comment = commentRepository.save(comment);
+
+        commentRepository.save(comment);
 
         return CommentMapper.mapToCommentDto(comment);
     }
+
 
     private void validateItem(Long itemId) {
         itemRepository.findById(itemId)

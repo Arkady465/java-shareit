@@ -1,8 +1,6 @@
 package ru.practicum.shareit.booking.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
@@ -14,46 +12,103 @@ import java.util.Optional;
 
 public interface BookingRepositoryJpa extends JpaRepository<Booking, Long> {
 
-    List<Booking> findAllByItemOwnerId(Long id);
-
     List<Booking> findAllByItem(Item item);
 
+    // все бронирования вещей конкретного владельца
+    List<Booking> findAllByItem_Owner_Id(Long ownerId);
+
+    // все бронирования конкретного пользователя
     List<Booking> findAllByBooker(User booker);
 
-    List<Booking> findAllByBookerIdOrderByStartDesc(Long bookerId);
+    // проверка, бронировал ли пользователь вещь и аренда уже закончилась
+    boolean existsByItem_IdAndBooker_IdAndEndBefore(Long itemId,
+                                                    Long bookerId,
+                                                    LocalDateTime end);
 
-    List<Booking> findAllByItemOwnerIdOrderByStartDesc(Long ownerId);
+    List<Booking> findAllByItemInAndStatusOrderByStartAsc(List<Item> items,
+                                                          BookingStatus status);
 
-    List<Booking> findByBookerIdAndEndBefore(Long bookerId, LocalDateTime end);
+    List<Booking> findAllByItemInAndStatusOrderByStartDesc(List<Item> items,
+                                                           BookingStatus status);
 
-    List<Booking> findByBookerIdAndStartAfter(Long bookerId, LocalDateTime start);
+    List<Booking> findAllByItem(Item item,
+                                BookingStatus status,
+                                LocalDateTime date);
 
-    List<Booking> findByBookerIdAndStartBeforeAndEndAfter(Long bookerId, LocalDateTime start, LocalDateTime end);
+    List<Booking> findByBookerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(User user,
+                                                                            LocalDateTime currentDate,
+                                                                            LocalDateTime currentDate1);
 
-    List<Booking> findByBookerIdAndStatus(Long bookerId, BookingStatus status);
+    List<Booking> findByBookerAndEndIsBeforeOrderByStartDesc(User user,
+                                                             LocalDateTime currentDate);
 
-    List<Booking> findByItemOwnerIdAndEndBefore(Long ownerId, LocalDateTime end);
+    List<Booking> findByBookerAndStartIsAfterOrderByStartDesc(User user,
+                                                              LocalDateTime currentDate);
 
-    List<Booking> findByItemOwnerIdAndStartAfter(Long ownerId, LocalDateTime start);
+    List<Booking> findByBookerAndStartIsBeforeAndEndIsAfter(User booker,
+                                                            LocalDateTime currentDate,
+                                                            LocalDateTime currentDate1);
 
-    /**
-     * CURRENT-бронирования владельца вещи.
-     * Явно задаём путь b.item.owner.id, чтобы не падать на ownerId в Item.
-     */
-    @Query("SELECT b FROM Booking b " +
-            "WHERE b.item.owner.id = :ownerId " +
-            "AND b.start < :start " +
-            "AND b.end > :end")
-    List<Booking> findByItemOwnerIdAndStartBeforeAndEndAfter(@Param("ownerId") Long ownerId,
-                                                             @Param("start") LocalDateTime start,
-                                                             @Param("end") LocalDateTime end);
+    List<Booking> findByBookerAndEndIsBefore(User booker,
+                                             LocalDateTime currentDate);
 
-    List<Booking> findByItemOwnerIdAndStatus(Long ownerId, BookingStatus status);
+    List<Booking> findByBookerAndStartIsAfter(User booker,
+                                              LocalDateTime currentDate);
 
-    Optional<Booking> findFirstByItemIdAndEndBeforeOrderByEndDesc(Long itemId, LocalDateTime date);
+    List<Booking> findByBookerAndStatus(User user,
+                                        BookingStatus status);
 
-    Optional<Booking> findFirstByItemIdAndStartAfterOrderByStart(Long itemId, LocalDateTime date);
+    List<Booking> findByBooker_IdAndStatus(Long bookerId,
+                                           BookingStatus status);
 
-    boolean existsByItemIdAndBookerIdAndEndBefore(Long itemId, Long bookerId, LocalDateTime end);
+    List<Booking> findByItemInAndStatus(List<Item> items,
+                                        BookingStatus status);
+
+    List<Booking> findByItemAndStartIsBeforeAndEndIsAfter(Item item,
+                                                          LocalDateTime currentDate,
+                                                          LocalDateTime currentDate1);
+
+    List<Booking> findByItemAndEndIsBefore(Item item,
+                                           LocalDateTime currentDate);
+
+    List<Booking> findByItemAndStartIsAfter(Item item,
+                                            LocalDateTime currentDate);
+
+    List<Booking> findByItemAndStatus(Item item,
+                                      BookingStatus status);
+
+    // все бронирования по вещам конкретного владельца со статусом "в прошлом"
+    List<Booking> findByItem_Owner_IdAndEndBefore(Long ownerId,
+                                                  LocalDateTime end);
+
+    // все будущие бронирования по вещам владельца
+    List<Booking> findByItem_Owner_IdAndStartAfter(Long ownerId,
+                                                   LocalDateTime start);
+
+    // текущие бронирования по вещам владельца
+    List<Booking> findByItem_Owner_IdAndStartBeforeAndEndAfter(Long ownerId,
+                                                               LocalDateTime start,
+                                                               LocalDateTime end);
+
+    // бронирования по вещам владельца с определённым статусом
+    List<Booking> findByItem_Owner_IdAndStatus(Long ownerId,
+                                               BookingStatus status);
+
+    // для списка id вещей (используется при просмотрах вещей владельца)
+    List<Booking> findAllByItem_IdInAndStatusAndStartLessThanEqualOrderByStartDesc(List<Long> idList,
+                                                                                   BookingStatus status,
+                                                                                   LocalDateTime now);
+
+    List<Booking> findAllByItem_IdInAndStatusAndStartAfterOrderByStartDesc(List<Long> idList,
+                                                                           BookingStatus status,
+                                                                           LocalDateTime now);
+
+    // last booking
+    Optional<Booking> findFirstByItem_IdAndEndBeforeOrderByEndDesc(Long itemId,
+                                                                   LocalDateTime date);
+
+    // next booking
+    Optional<Booking> findFirstByItem_IdAndStartAfterOrderByStart(Long itemId,
+                                                                  LocalDateTime date);
 }
 
