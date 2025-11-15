@@ -16,16 +16,5 @@ public interface ItemService {
 
     List<ItemDto> searchItems(String text);
 
-    List<ItemDto> getAllByUser(Long userId, Integer from, Integer size);
-
-    List<ItemDto> search(String text, Integer from, Integer size);
-
     CommentDto addComment(Long itemId, CommentDto commentDto, Long userId);
-
-    // Добавляем отсутствующие методы
-    ItemDto create(ItemDto itemDto, Long userId);
-
-    ItemDto update(ItemDto itemDto, Long itemId, Long userId);
-
-    ItemDto getById(Long itemId, Long userId);
 }

@@ -38,33 +38,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDto addItem(Long userId, ItemDto itemDto) {
-        return create(itemDto, userId);
-    }
-
-    @Override
-    @Transactional
-    public ItemDto updateItem(Long itemId, Long userId, ItemDto itemDto) {
-        return update(itemDto, itemId, userId);
-    }
-
-    @Override
-    public ItemDto getItemById(Long itemId, Long userId) {
-        return getById(itemId, userId);
-    }
-
-    @Override
-    public List<ItemDto> getItemsByOwner(Long userId) {
-        return getAllByUser(userId, 0, 20);
-    }
-
-    @Override
-    public List<ItemDto> searchItems(String text) {
-        return search(text, 0, 20);
-    }
-
-    @Override
-    @Transactional
-    public ItemDto create(ItemDto itemDto, Long userId) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
@@ -82,7 +55,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public ItemDto update(ItemDto itemDto, Long itemId, Long userId) {
+    public ItemDto updateItem(Long itemId, Long userId, ItemDto itemDto) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item not found"));
 
@@ -105,7 +78,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto getById(Long itemId, Long userId) {
+    public ItemDto getItemById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item not found"));
 
@@ -120,11 +93,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllByUser(Long userId, Integer from, Integer size) {
+    public List<ItemDto> getItemsByOwner(Long userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id"));
+        Pageable pageable = PageRequest.of(0, 20, Sort.by("id"));
         List<Item> items = itemRepository.findByOwnerId(userId, pageable);
 
         return items.stream()
@@ -134,12 +107,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> search(String text, Integer from, Integer size) {
+    public List<ItemDto> searchItems(String text) {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         }
 
-        Pageable pageable = PageRequest.of(from / size, size);
+        Pageable pageable = PageRequest.of(0, 20);
         return itemRepository.searchAvailableItems(text.toLowerCase(), pageable).stream()
                 .map(this::toItemDto)
                 .collect(Collectors.toList());

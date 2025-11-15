@@ -93,57 +93,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getByOwner(Long userId, String state) {
-        return getAllByOwner(userId, state, 0, 20);
-    }
-
-    @Override
-    public List<BookingDto> getByUser(Long userId, String state) {
-        return getAllByBooker(userId, state, 0, 20);
-    }
-
-    @Override
-    public List<BookingDto> getAllByBooker(Long userId, String state, Integer from, Integer size) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
-        LocalDateTime now = LocalDateTime.now();
-
-        List<Booking> bookings;
-        switch (state.toUpperCase()) {
-            case "ALL":
-                bookings = bookingRepository.findByBookerId(userId, pageable);
-                break;
-            case "CURRENT":
-                bookings = bookingRepository.findByBookerIdAndStartBeforeAndEndAfter(userId, now, now, pageable);
-                break;
-            case "PAST":
-                bookings = bookingRepository.findByBookerIdAndEndBefore(userId, now, pageable);
-                break;
-            case "FUTURE":
-                bookings = bookingRepository.findByBookerIdAndStartAfter(userId, now, pageable);
-                break;
-            case "WAITING":
-                bookings = bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.WAITING, pageable);
-                break;
-            case "REJECTED":
-                bookings = bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.REJECTED, pageable);
-                break;
-            default:
-                throw new ValidationException("Unknown state: " + state);
-        }
-
-        return bookings.stream()
-                .map(this::toBookingDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<BookingDto> getAllByOwner(Long userId, String state, Integer from, Integer size) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-
-        Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
+        Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "start"));
         LocalDateTime now = LocalDateTime.now();
 
         List<Booking> bookings;
@@ -165,6 +118,43 @@ public class BookingServiceImpl implements BookingService {
                 break;
             case "REJECTED":
                 bookings = bookingRepository.findByItemOwnerIdAndStatus(userId, BookingStatus.REJECTED, pageable);
+                break;
+            default:
+                throw new ValidationException("Unknown state: " + state);
+        }
+
+        return bookings.stream()
+                .map(this::toBookingDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingDto> getByUser(Long userId, String state) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "start"));
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Booking> bookings;
+        switch (state.toUpperCase()) {
+            case "ALL":
+                bookings = bookingRepository.findByBookerId(userId, pageable);
+                break;
+            case "CURRENT":
+                bookings = bookingRepository.findByBookerIdAndStartBeforeAndEndAfter(userId, now, now, pageable);
+                break;
+            case "PAST":
+                bookings = bookingRepository.findByBookerIdAndEndBefore(userId, now, pageable);
+                break;
+            case "FUTURE":
+                bookings = bookingRepository.findByBookerIdAndStartAfter(userId, now, pageable);
+                break;
+            case "WAITING":
+                bookings = bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.WAITING, pageable);
+                break;
+            case "REJECTED":
+                bookings = bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.REJECTED, pageable);
                 break;
             default:
                 throw new ValidationException("Unknown state: " + state);
