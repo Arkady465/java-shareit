@@ -22,8 +22,8 @@ import java.util.List;
  * TODO Sprint add-controllers.
  */
 @RestController
-@RequestMapping("/items")
 @RequiredArgsConstructor
+@RequestMapping("/items")
 public class ItemController {
 
     private final ItemService itemService;
@@ -31,7 +31,8 @@ public class ItemController {
     @PostMapping
     public ItemDto addItem(
             @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long ownerId,
-            @Valid @RequestBody ItemDto itemDto) {
+            @Valid @RequestBody ItemDto itemDto
+    ) {
         return itemService.addItem(ownerId, itemDto);
     }
 
@@ -39,21 +40,24 @@ public class ItemController {
     public ItemDto updateItem(
             @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long ownerId,
             @PathVariable Long itemId,
-            @RequestBody ItemDto itemDto) {
+            @RequestBody ItemDto itemDto
+    ) {
         return itemService.updateItem(ownerId, itemId, itemDto);
     }
 
     @GetMapping("/{itemId}")
     public ItemDto getItemById(
             @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long userId,
-            @PathVariable Long itemId) {
+            @PathVariable Long itemId
+    ) {
         return itemService.getItemById(userId, itemId);
     }
 
     @GetMapping
-    public List<ItemDto> getOwnerItems(
-            @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long ownerId) {
-        return itemService.getOwnerItems(ownerId);
+    public List<ItemDto> getItems(
+            @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long ownerId
+    ) {
+        return itemService.getItemsByOwner(ownerId);
     }
 
     @GetMapping("/search")
@@ -65,7 +69,9 @@ public class ItemController {
     public CommentDto addComment(
             @PathVariable Long itemId,
             @Valid @RequestBody CommentDto commentDto,
-            @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long authorId) {
+            @RequestHeader(HeaderConstants.X_SHARER_USER_ID) Long authorId
+    ) {
         return itemService.addComment(itemId, commentDto, authorId);
     }
 }
+
