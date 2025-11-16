@@ -1,26 +1,20 @@
 package ru.practicum.shareit.item.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import ru.practicum.shareit.item.dto.ItemDto;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ItemMapper {
+@Mapper(componentModel = "spring")
+public interface ItemMapper {
 
-    public static ItemDto toDto(Item model) {
-        if (model == null) {
-            return null;
-        }
-        return new ItemDto(model.getId(), model.getName(), model.getDescription(), model.getAvailable());
-    }
+    @Mapping(target = "ownerId", expression = "java(item.getOwner() != null ? item.getOwner() : null)")
+    @Mapping(target = "lastBooking", ignore = true)
+    @Mapping(target = "nextBooking", ignore = true)
+    @Mapping(target = "comments", ignore = true)
+    ItemResponseDto toItemResponseDto(Item item);
 
-    public static Item fromDto(ItemDto dto, Long ownerId) {
-        if (dto == null) {
-            return null;
-        }
-        return new Item(dto.getId(), dto.getName(), dto.getDescription(), dto.getAvailable(), ownerId);
-    }
+    @Mapping(target = "owner", ignore = true)
+    Item toItem(ItemRequestDto itemRequestDto);
 }
-
-
