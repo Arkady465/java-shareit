@@ -1,40 +1,46 @@
 package ru.practicum.shareit.request.mapper;
 
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.user.User;
+import org.springframework.stereotype.Component;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Component
 public class ItemRequestMapper {
-    public static ItemRequest mapToItemRequest(ItemRequestDto itemRequestDto, User requestor) {
-        if (itemRequestDto == null) {
-            throw new NotFoundException("ItemRequestDto cannot be null");
-        }
 
-        if (requestor == null) {
-            throw new NotFoundException("Requestor cannot be null");
-        }
-
+    public ItemRequest toItemRequest(ru.practicum.shareit.request.dto.ItemRequestDto itemRequestDto, User requestor) {
         ItemRequest itemRequest = new ItemRequest();
-        itemRequest.setId(itemRequestDto.getId());
         itemRequest.setDescription(itemRequestDto.getDescription());
         itemRequest.setRequestor(requestor);
-        itemRequest.setCreated(itemRequestDto.getCreated());
-
+        itemRequest.setCreated(LocalDateTime.now());
         return itemRequest;
     }
 
-    public static ItemRequestDto mapToItemRequestDto(ItemRequest itemRequest) {
-        if (itemRequest == null) {
-            throw new NotFoundException("ItemRequest cannot be null");
-        }
+    public ItemRequestResponseDto toItemRequestResponseDto(ItemRequest itemRequest, List<Item> items) {
+        ItemRequestResponseDto dto = new ItemRequestResponseDto();
+        dto.setId(itemRequest.getId());
+        dto.setDescription(itemRequest.getDescription());
+        dto.setCreated(itemRequest.getCreated());
 
-        ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(itemRequest.getId());
-        itemRequestDto.setDescription(itemRequest.getDescription());
-        itemRequestDto.setRequestorId(itemRequest.getRequestor().getId());
-        itemRequestDto.setCreated(itemRequest.getCreated());
+        List<ru.practicum.shareit.item.dto.ItemRequestDto> itemDto = items.stream()
+                .map(this::toItemDto)
+                .toList();
+        dto.setItems(itemDto);
 
-        return itemRequestDto;
+        return dto;
+    }
+
+    private ru.practicum.shareit.item.dto.ItemRequestDto toItemDto(Item item) {
+        return new ru.practicum.shareit.item.dto.ItemRequestDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable(),
+                item.getRequestId()
+        );
     }
 }
