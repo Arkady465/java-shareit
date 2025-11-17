@@ -2,58 +2,43 @@ package ru.practicum.shareit.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.dto.CreateUserRequestDto;
-import ru.practicum.shareit.user.dto.UpdateUserRequestDto;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * TODO Sprint add-controllers.
+ */
 @RestController
-@RequestMapping(path = "/users")
 @RequiredArgsConstructor
-@Slf4j
-@Validated
+@RequestMapping("/users")
 public class UserController {
+
     private final UserClient userClient;
 
     @PostMapping
-    public ResponseEntity<Object> create(
-            @Valid @RequestBody CreateUserRequestDto userDto
-    ) {
-        log.info("Creating user {}", userDto);
+    public ResponseEntity<Object> create(@Valid @RequestBody UserDto userDto) {
         return userClient.create(userDto);
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> update(
-            @PathVariable Long userId,
-            @Valid @RequestBody UpdateUserRequestDto userDto
-    ) {
-        log.info("Updating user {}, userId={}", userDto, userId);
+    public ResponseEntity<Object> update(@PathVariable Long userId, @RequestBody UserDto userDto) {
         return userClient.update(userId, userDto);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<Object> getById(
-            @PathVariable Long userId
-    ) {
-        log.info("Get user, userId={}", userId);
-        return userClient.getById(userId);
-    }
-
-    @GetMapping
-    public ResponseEntity<Object> getAll() {
-        log.info("Get all users");
-        return userClient.getAll();
-    }
-
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> delete(
-            @PathVariable Long userId
-    ) {
-        log.info("Delete user, userId={}", userId);
-        return userClient.delete(userId);
+    public void delete(@PathVariable Long userId) {
+        userClient.delete(userId);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getById(@PathVariable Long id) {
+        return userClient.getById(id);
+    }
 }
